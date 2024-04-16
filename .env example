@@ -1,0 +1,14 @@
+API_URL=localhost:8080
+
+DB_HOST=localhost:3306
+DB_NAME=dbname
+DB_USER=dbuser
+DB_PASS=dbpass
+DB_NAME_TESTING=dbname_test
+
+SUPER_ADMIN_USERNAME=admin
+SUPER_ADMIN_EMAIL=admin@gmail.com
+SUPER_ADMIN_PASSWORD=admin
+SUPER_ADMIN_NAME=Admin
+
+JWT_SECRET=yourjwtsecret
