@@ -41,7 +41,6 @@ func NewSQLUserStore(dbname string) (*SQLUserStore, error) {
 	DB_HOST := os.Getenv("DB_HOST")
 	DB_USER := os.Getenv("DB_USER")
 	DB_PASS := os.Getenv("DB_PASS")
-	fmt.Println("HERE BRO" + DB_HOST)
 
 	connStr := fmt.Sprintf("%s:%s@tcp(%s)/?parseTime=true", DB_USER, DB_PASS, DB_HOST)
 	db, err := gorm.Open(mysql.Open(connStr), &gorm.Config{})
