@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
 	"strconv"
 
@@ -99,14 +98,14 @@ func (s *SQLUserStore) CreateUser(ctx context.Context, user *types.User) (*types
 func (s *SQLUserStore) UpdateUser(ctx context.Context, values types.UpdateUserParams, idStr string) error {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return fmt.Errorf("could not update user")
+		return err
 	}
 	tx := s.DB.Model(&types.User{}).Where("id = ?", id).Updates(values)
 	if tx.Error != nil {
 		return tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return fmt.Errorf("could not update user")
+		return err
 	}
 
 	return nil
@@ -118,7 +117,7 @@ func (s *SQLUserStore) DeleteUser(ctx context.Context, id int) error {
 		return tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return fmt.Errorf("could not find user")
+		return fmt.Errorf("could not delete user")
 	}
 	return nil
 }
@@ -126,7 +125,6 @@ func (s *SQLUserStore) DeleteUser(ctx context.Context, id int) error {
 func (s *SQLUserStore) Drop(ctx context.Context) error {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		slog.Info(fmt.Sprintf("Could not load .env file %+v", err))
 		return err
 	}
 	sql, err := s.DB.DB()

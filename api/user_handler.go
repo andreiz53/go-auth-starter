@@ -80,12 +80,12 @@ func (h *UserHandler) HandleUpdateUser(ctx fiber.Ctx) error {
 
 	var u types.UpdateUserParams
 	if err := ctx.Bind().Body(&u); err != nil {
-		return err
+		return ErrBadRequest()
 	}
 	err := h.userStore.UpdateUser(ctx.Context(), u, id)
 	if err != nil {
-		return err
+		return ErrInternalError()
 	}
 
-	return ctx.JSON(map[string]string{"message": "user updated successfully"})
+	return ctx.JSON(map[string]string{"message": "user updated"})
 }

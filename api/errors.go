@@ -58,3 +58,10 @@ func ErrInternalError() Error {
 		Message: "internal error",
 	}
 }
+
+func ErrNotFound() Error {
+	return Error{
+		Code:    http.StatusNotFound,
+		Message: "not found",
+	}
+}

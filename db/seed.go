@@ -19,7 +19,7 @@ func SeedRoles(db *gorm.DB) {
 func SeedSuperAdmin(db *gorm.DB) {
 	password, err := bcrypt.GenerateFromPassword([]byte(os.Getenv("SUPER_ADMIN_PASSWORD")), bcrypt.DefaultCost)
 	if err != nil {
-		panic("failed to encrypt password")
+		panic("failed to encrypt password when seeding super admin")
 	}
 	superAdmin := types.User{
 		Username: os.Getenv("SUPER_ADMIN_USERNAME"),
