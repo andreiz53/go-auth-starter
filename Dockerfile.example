@@ -1,0 +1,27 @@
+FROM golang:1.21.5-alpine3.19
+
+WORKDIR /app
+
+ENV API_URL=localhost:8080
+ENV DB_HOST=localhost:3306
+ENV DB_NAME=dbname
+ENV DB_USER=dbuser
+ENV DB_PASS=dbpass
+ENV DB_NAME_TESTING=dbname_test
+ENV SUPER_ADMIN_USERNAME=admin
+ENV SUPER_ADMIN_EMAIL=admin@gmail.com
+ENV SUPER_ADMIN_PASSWORD=admin
+ENV SUPER_ADMIN_NAME=Admin
+ENV JWT_SECRET=yourjwtsecret
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -o main .
+
+EXPOSE 3000
+
+CMD [ "./main" ]
