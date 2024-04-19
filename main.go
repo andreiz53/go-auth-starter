@@ -19,15 +19,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	DB_NAME := os.Getenv("DB_NAME")
-	userStore, err := db.NewSQLUserStore(DB_NAME)
+	userStore, err := db.NewSQLUserStore(os.Getenv("DB_NAME"))
 	if err != nil {
-		log.Fatal("Could not load storage")
+		log.Fatal(err)
 	}
 	userStore.Init()
-	store := db.NewStore(userStore)
 
 	var (
+		store = db.NewStore(userStore)
 		app   = fiber.New(serverConfig)
 		uh    = api.NewUserHandler(store.User)
 		ah    = api.NewAuthHandler(store.User)
