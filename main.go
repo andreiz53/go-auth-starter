@@ -18,19 +18,21 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+
 	DB_NAME := os.Getenv("DB_NAME")
 	userStore, err := db.NewSQLUserStore(DB_NAME)
 	if err != nil {
 		log.Fatal("Could not load storage")
 	}
 	userStore.Init()
+	store := db.NewStore(userStore)
 
 	var (
 		app   = fiber.New(serverConfig)
-		uh    = api.NewUserHandler(userStore)
-		ah    = api.NewAuthHandler(userStore)
+		uh    = api.NewUserHandler(store.User)
+		ah    = api.NewAuthHandler(store.User)
 		auth  = app.Group("/api/auth")
-		apiv1 = app.Group("/api/v1", api.JWTAuth(userStore))
+		apiv1 = app.Group("/api/v1", api.JWTAuth(store.User))
 		admin = apiv1.Group("/admin", api.AdminAuth)
 	)
 	auth.Post("/", ah.HandleAuthenticate)
