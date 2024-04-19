@@ -16,17 +16,15 @@ type Dropper interface {
 	Drop(ctx context.Context) error
 }
 
-// TODO: ID must be string everywhere
-// TODO: get rid of id in UpdateUser
 type UserStorage interface {
 	Dropper
 
 	CreateUser(ctx context.Context, user *types.User) (*types.User, error)
-	GetUserByID(ctx context.Context, id int) (*types.User, error)
+	GetUserByID(ctx context.Context, idStr string) (*types.User, error)
 	GerUserByEmail(ctx context.Context, email string) (*types.User, error)
 	GetAllUsers(ctx context.Context) ([]*types.User, error)
 	UpdateUser(ctx context.Context, values types.UpdateUserParams, idStr string) error
-	DeleteUser(ctx context.Context, id int) error
+	DeleteUser(ctx context.Context, idStr string) error
 }
 
 type SQLUserStore struct {
@@ -34,10 +32,7 @@ type SQLUserStore struct {
 }
 
 func NewSQLUserStore(dbname string) (*SQLUserStore, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
+
 	DB_HOST := os.Getenv("DB_HOST")
 	DB_USER := os.Getenv("DB_USER")
 	DB_PASS := os.Getenv("DB_PASS")
@@ -60,7 +55,11 @@ func (s *SQLUserStore) Init() {
 	SeedSuperAdmin(s.DB)
 }
 
-func (s *SQLUserStore) GetUserByID(ctx context.Context, id int) (*types.User, error) {
+func (s *SQLUserStore) GetUserByID(ctx context.Context, idStr string) (*types.User, error) {
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return nil, err
+	}
 	var user types.User
 	tx := s.DB.First(&user, id)
 	if tx.Error != nil {
@@ -110,7 +109,11 @@ func (s *SQLUserStore) UpdateUser(ctx context.Context, values types.UpdateUserPa
 	return nil
 }
 
-func (s *SQLUserStore) DeleteUser(ctx context.Context, id int) error {
+func (s *SQLUserStore) DeleteUser(ctx context.Context, idStr string) error {
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return err
+	}
 	tx := s.DB.Delete(&types.User{}, id)
 	if tx.Error != nil {
 		return tx.Error

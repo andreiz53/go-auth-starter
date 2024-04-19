@@ -1,7 +1,7 @@
 package api
 
 import (
-	"strconv"
+	"net/http"
 
 	"github.com/andreiz53/go-auth-starter/db"
 	"github.com/andreiz53/go-auth-starter/types"
@@ -26,11 +26,7 @@ func (h *UserHandler) HandleGetAllUsers(ctx fiber.Ctx) error {
 	return ctx.JSON(users)
 }
 func (h *UserHandler) HandleGetUser(ctx fiber.Ctx) error {
-	idStr := ctx.Params("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return ErrInvalidID()
-	}
+	id := ctx.Params("id")
 	user, err := h.userStore.GetUserByID(ctx.Context(), id)
 	if err != nil {
 		return ErrInvalidID()
@@ -39,13 +35,13 @@ func (h *UserHandler) HandleGetUser(ctx fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleCreateUser(ctx fiber.Ctx) error {
-	var u types.UserParams
+	var u types.CreateUserParams
 	if err := ctx.Bind().Body(&u); err != nil {
 		return ErrBadRequest()
 	}
 
 	if errs := u.Validate(); len(errs) > 0 {
-		return ctx.JSON(errs)
+		return ctx.Status(http.StatusBadRequest).JSON(errs)
 	}
 
 	user, err := types.NewUserFromParams(u)
@@ -62,13 +58,9 @@ func (h *UserHandler) HandleCreateUser(ctx fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleDeleteUser(ctx fiber.Ctx) error {
-	idStr := ctx.Params("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return ErrInvalidID()
-	}
+	id := ctx.Params("id")
 
-	if err = h.userStore.DeleteUser(ctx.Context(), id); err != nil {
+	if err := h.userStore.DeleteUser(ctx.Context(), id); err != nil {
 		return ErrInvalidID()
 	}
 

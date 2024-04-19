@@ -6,3 +6,4 @@ temp
 settings.json
 Dockerfile
 compose.yaml
+resources

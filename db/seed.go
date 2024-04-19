@@ -30,3 +30,18 @@ func SeedSuperAdmin(db *gorm.DB) {
 	}
 	db.FirstOrCreate(&superAdmin)
 }
+
+func SeedTestUser(db *gorm.DB) {
+	password, err := bcrypt.GenerateFromPassword([]byte("passw0rdbr0"), bcrypt.DefaultCost)
+	if err != nil {
+		panic("failed to encrypt password when seeding super admin")
+	}
+	user := types.User{
+		Username: "testing",
+		Email:    "testing@testing.testing",
+		Password: string(password),
+		Name:     "testing",
+		RoleID:   types.UserRoleAdmin,
+	}
+	db.FirstOrCreate(&user)
+}

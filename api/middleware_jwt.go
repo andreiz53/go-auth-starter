@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -9,6 +10,13 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+type JWTClaims struct {
+	jwt.RegisteredClaims
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	Exp   int64  `json:"exp"`
+}
 
 func JWTAuth(userStore db.UserStorage) fiber.Handler {
 	return func(ctx fiber.Ctx) error {
@@ -28,9 +36,8 @@ func JWTAuth(userStore db.UserStorage) fiber.Handler {
 			return ErrUnauthorized()
 		}
 
-		u := claims["id"].(float64)
-		userID := int(u)
-		user, err := userStore.GetUserByID(ctx.Context(), userID)
+		u := claims["id"].(string)
+		user, err := userStore.GetUserByID(ctx.Context(), u)
 		if err != nil {
 			return ErrUnauthorized()
 		}
@@ -62,10 +69,10 @@ func ValidateToken(tokenStr string) (jwt.MapClaims, error) {
 }
 
 func GenerateTokenFromUser(user *types.User) string {
-	claims := jwt.MapClaims{
-		"id":    user.ID,
-		"email": user.Email,
-		"exp":   time.Now().Add(time.Hour * 24).Unix(),
+	claims := JWTClaims{
+		ID:    fmt.Sprint(user.ID),
+		Email: user.Email,
+		Exp:   time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

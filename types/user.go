@@ -30,14 +30,14 @@ type UpdateUserParams struct {
 	Name     string `json:"name"`
 }
 
-type UserParams struct {
+type CreateUserParams struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Name     string `json:"name"`
 }
 
-func (p UserParams) Validate() map[string]string {
+func (p CreateUserParams) Validate() map[string]string {
 	var errors = map[string]string{}
 	if _, err := mail.ParseAddress(p.Email); err != nil {
 		errors["email"] = strings.Split(err.Error(), "mail: ")[1]
@@ -54,7 +54,7 @@ func (p UserParams) Validate() map[string]string {
 	return errors
 }
 
-func NewUserFromParams(u UserParams) (*User, error) {
+func NewUserFromParams(u CreateUserParams) (*User, error) {
 	encPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func NewUserFromParams(u UserParams) (*User, error) {
 	}, nil
 }
 
-func NewAdminFromParams(u UserParams) (*User, error) {
+func NewAdminFromParams(u CreateUserParams) (*User, error) {
 	encPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
